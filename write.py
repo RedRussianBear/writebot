@@ -22,7 +22,7 @@ def numerify(path_command):
 
 
 def svg_write(svg_directory, ser1, ser2):
-    files = [file for file in listdir(svg_directory) if isfile(join(svg_directory, file))]
+    files = [join(svg_directory, file) for file in listdir(svg_directory) if isfile(join(svg_directory, file))]
 
     for file in files:
         with open(file) as r:
