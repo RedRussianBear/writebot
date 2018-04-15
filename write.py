@@ -51,12 +51,12 @@ def calibrate(ser1, ser2):
     command = input()
     while command[0] != 'q':
         if command[0] in {'c', 'C', 'f', 'F'}:
-            ser1.write(command)
-            ser2.write(command)
+            ser1.write(command.encode('ascii'))
+            ser2.write(command.encode('ascii'))
         if command[0] in {'x', 'X', 'y', 'Y'}:
-            ser2.write(command)
+            ser2.write(command.encode('ascii'))
         if command[0] in {'p', 'P', 'z', 'Z'}:
-            ser1.write(command)
+            ser1.write(command.encode('ascii'))
 
         command = input()
 
