@@ -70,6 +70,7 @@ if __name__ == '__main__':
     wait_for(serial2)
 
     if len(argv) == 4:
+        calibrate(serial1, serial2)
         svg_write(argv[1], serial1, serial2)
     else:
         print('Incorrect number of arguments!')
