@@ -34,6 +34,7 @@ def svg_write(svg_directory, ser1, ser2):
             print('m%0.2f,%0.2f' % (point[X], point[Y]))
 
             if point[0] == 'M':
+                print('lifting')
                 ser1.write('p15'.encode('ascii'))
                 wait_for(ser1)
 
@@ -41,6 +42,7 @@ def svg_write(svg_directory, ser1, ser2):
             wait_for(ser2)
 
             if point[0] == 'M':
+                print('lowering')
                 ser1.write('p-15'.encode('ascii'))
                 wait_for(ser1)
 
