@@ -4,7 +4,9 @@ const int STEP = 8;
 const int MODE_HALF = 8;
 const int MESSAGE_LEN = 32;
 const float STEPSPERREV = 2048;
-const float BASE_SPEED = 160 * STEPSPERREV;
+const float MAX_SPEED = 1000.0;
+const float ACCELERATION = 100.0;
+const float BASE_SPEED = 300.0;
 const float STEPSPERMM = 50.947;
 
 const byte ABS = 1;
@@ -17,6 +19,7 @@ boolean moving = false;
 
 AccelStepper motorX(MODE_HALF, 2, 4, 3, 5);
 AccelStepper motorY(MODE_HALF, 6, 8, 7, 9);
+AccelStepper motorF(MODE_HALF, 10, 12, 11, 13);
 
 char message_store[MESSAGE_LEN + 1];
 
@@ -26,11 +29,11 @@ void setup() {
   while (!Serial);
   Serial.begin(9600);
 
-  motorX.setMaxSpeed(BASE_SPEED);
-  motorX.setAcceleration(BASE_SPEED);
+  motorX.setMaxSpeed(MAX_SPEED);
+  motorX.setAcceleration(ACCELERATION);
   motorX.setSpeed(BASE_SPEED);
-  motorY.setMaxSpeed(BASE_SPEED);
-  motorY.setAcceleration(BASE_SPEED);
+  motorY.setMaxSpeed(MAX_SPEED);
+  motorY.setAcceleration(ACCELERATION);
   motorY.setSpeed(BASE_SPEED);
 
   Serial.println("Booted");
@@ -57,7 +60,7 @@ void loop() {
         message = strtok(message, ",");
         dX = STEPSPERMM * atof(message);
         message = strtok(NULL, ",");
-        dY = STEPSPERMM * atof(message);
+        dY = -STEPSPERMM * atof(message);
         break;
 
       case 'x':
@@ -67,7 +70,7 @@ void loop() {
 
       case 'y':
       case 'Y':
-        dY = STEPSPERMM * atof(message);
+        dY = -STEPSPERMM * atof(message);
         break;
 
       case 'c':
@@ -80,8 +83,8 @@ void loop() {
     moveToXY(dX, dY, mode);
   }
 
-  motorX.runSpeedToPosition();
-  motorY.runSpeedToPosition();
+  motorX.run();
+  motorY.run();
 
   if(moving && !motorX.distanceToGo() && !motorY.distanceToGo()) {
     moving = false;
@@ -92,9 +95,6 @@ void loop() {
 
 void moveToXY(float x, float y, byte mode) {
   float dx, dy;
-
-  Serial.println(x);
-  Serial.println(y);
 
   if(mode == ABS) {
     dx = dx - motorX.currentPosition();
@@ -109,9 +109,13 @@ void moveToXY(float x, float y, byte mode) {
 
 
   if(abs(dx) < abs(dy)) {
+    motorX.setAcceleration(abs(ACCELERATION * dx / dy));
+    motorY.setAcceleration(ACCELERATION);
     motorX.setSpeed(abs(BASE_SPEED * dx / dy));
     motorY.setSpeed(BASE_SPEED);
   } else {
+    motorX.setAcceleration(ACCELERATION);
+    motorY.setAcceleration(abs(ACCELERATION * dy / dx));
     motorX.setSpeed(BASE_SPEED);
     motorY.setSpeed(abs(BASE_SPEED * dy / dx));
   }
