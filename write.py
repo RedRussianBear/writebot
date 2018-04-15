@@ -33,18 +33,19 @@ def svg_write(svg_directory, ser1, ser2):
         for point in points:
 
             if point[0] == 'M':
-                ser1.write('Z10,30')
+                ser1.write('p15'.encode('ascii'))
                 wait_for(ser1)
 
-            ser2.write('M%f,%f' % (point[X], point[Y]))
+            ser2.write(('M%f,%f' % (point[X], point[Y])).encode('ascii'))
             wait_for(ser2)
 
             if point[0] == 'M':
-                ser1.write('Z-10,-30')
+                ser1.write('p-15'.encode('ascii'))
                 wait_for(ser1)
 
-    ser1.close()
-    ser2.close()
+        ser1.write('p15'.encode('ascii'))
+        ser2.write('M0,0'.encode('ascii'))
+        ser1.write('p-15'.encode('ascii'))
 
 
 def calibrate(ser1, ser2):
@@ -74,3 +75,6 @@ if __name__ == '__main__':
         svg_write(argv[1], serial1, serial2)
     else:
         print('Incorrect number of arguments!')
+
+    serial1.close()
+    serial2.close()
