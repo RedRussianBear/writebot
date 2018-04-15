@@ -18,7 +18,7 @@ def wait_for(ser):
 
 def numerify(path_command):
     parse = search('(?P<type>[A-Z])(?P<x>[0-9]+?.?[0-9]*?),(?P<y>[0-9]+?.?[0-9]*?)', path_command).groupdict()
-    return [parse['type'], float(parse['x']) / 3, float(parse['y']) / 3]
+    return [parse['type'], float(parse['x']), float(parse['y'])]
 
 
 def svg_write(svg_directory, ser1, ser2):
