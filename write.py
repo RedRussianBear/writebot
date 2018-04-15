@@ -50,12 +50,12 @@ def svg_write(svg_directory, ser1, ser2):
 def calibrate(ser1, ser2):
     command = input()
     while command[0] != 'q':
-        if command[0] in ('c', 'C', 'f', 'F'):
+        if command[0] in {'c', 'C', 'f', 'F'}:
             ser1.write(command)
             ser2.write(command)
-        if command[0] in ('x', 'X', 'y', 'Y'):
+        if command[0] in {'x', 'X', 'y', 'Y'}:
             ser2.write(command)
-        if command[0] in ('p', 'P', 'z', 'Z'):
+        if command[0] in {'p', 'P', 'z', 'Z'}:
             ser1.write(command)
 
         command = input()
