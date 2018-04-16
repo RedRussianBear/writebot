@@ -38,7 +38,7 @@ def svg_write(svg_directory, ser1, ser2):
                 ser1.write('p15'.encode('ascii'))
                 wait_for(ser1)
 
-            ser2.write(('m%0.2f,%0.2f' % (point[X], point[Y])).encode('ascii'))
+            ser2.write(('M%0.2f,%0.2f' % (point[X], point[Y])).encode('ascii'))
             wait_for(ser2)
 
             if point[0] == 'M':
