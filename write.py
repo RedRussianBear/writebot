@@ -26,25 +26,25 @@ def svg_write(svg_directory, ser1, ser2):
 
     for file in files:
         with open(file) as r:
-            points = search('d="(.*?)"', r.read()).groups()
-        points = [j for i in points for j in i.strip().split(' ')]
-        points = [numerify(x) for x in points]
+            paths = search('d="(.*?)"', r.read()).groups()
+        paths = [[numerify(point) for point in path.strip().split(' ')] for path in paths]
 
-        for point in points:
-            print('m%0.2f,%0.2f' % (point[X], point[Y]))
+        for path in paths:
+            for point in path:
+                print('m%0.2f,%0.2f' % (point[X], point[Y]))
 
-            if point[0] == 'M':
-                print('lifting')
-                ser1.write('p15'.encode('ascii'))
-                wait_for(ser1)
+                if point[0] == 'M':
+                    print('lifting')
+                    ser1.write('p15'.encode('ascii'))
+                    wait_for(ser1)
 
-            ser2.write(('M%0.2f,%0.2f' % (point[X], point[Y])).encode('ascii'))
-            wait_for(ser2)
+                ser2.write(('M%0.3f,%0.3f' % (point[X], point[Y])).encode('ascii'))
+                wait_for(ser2)
 
-            if point[0] == 'M':
-                print('lowering')
-                ser1.write('p-15'.encode('ascii'))
-                wait_for(ser1)
+                if point[0] == 'M':
+                    print('lowering')
+                    ser1.write('p-15'.encode('ascii'))
+                    wait_for(ser1)
 
         ser1.write('p15'.encode('ascii'))
         ser2.write('M0,0'.encode('ascii'))
