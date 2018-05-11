@@ -16,6 +16,10 @@ def wait_for(ser):
     return ser.read_all()
 
 
+def tell(serial, message):
+    return serial.write(message.encode('ascii'))
+
+
 def numerify(path_command):
     parse = search('(?P<type>[A-Z])(?P<x>[0-9]+?.?[0-9]*?),(?P<y>[0-9]+?.?[0-9]*?)', path_command).groupdict()
     return [parse['type'], float(parse['x']), float(parse['y'])]
@@ -35,37 +39,41 @@ def svg_write(svg_directory, ser1, ser2):
 
                 if point[0] == 'M':
                     print('lifting')
-                    ser1.write('p15'.encode('ascii'))
+                    tell(ser1, 'p15')
                     wait_for(ser1)
 
-                ser2.write(('M%0.3f,%0.3f' % (point[X], point[Y])).encode('ascii'))
+                tell(ser2, ('M%0.3f,%0.3f' % (point[X], point[Y])))
                 wait_for(ser2)
 
                 if point[0] == 'M':
                     print('lowering')
-                    ser1.write('p-15'.encode('ascii'))
+                    tell(ser1, 'p-15')
                     wait_for(ser1)
 
-        ser1.write('p15'.encode('ascii'))
-        ser2.write('M0,0'.encode('ascii'))
-        ser1.write('p-15'.encode('ascii'))
+        tell(ser1, 'p15')
+        tell(ser2, 'M0,0')
+        tell(ser1, 'p-15')
 
 
 def calibrate(ser1, ser2):
     command = input()
     while command[0] != 'q':
         if command[0] in {'c', 'C', 'f', 'F'}:
-            ser1.write(command.encode('ascii'))
-            ser2.write(command.encode('ascii'))
+            tell(ser1, command)
+            tell(ser2, command)
         if command[0] in {'x', 'X', 'y', 'Y'}:
-            ser2.write(command.encode('ascii'))
+            tell(ser2, command)
         if command[0] in {'p', 'P', 'z', 'Z'}:
-            ser1.write(command.encode('ascii'))
+            tell(ser1, command)
 
         command = input()
 
 
 if __name__ == '__main__':
+    if len(argv) != 4:
+        print('Incorrect number of arguments!')
+        raise SystemExit
+
     board_0 = argv[2]
     board_1 = argv[3]
     serial1 = Serial(board_0, 9600, timeout=0)
@@ -73,11 +81,8 @@ if __name__ == '__main__':
     wait_for(serial1)
     wait_for(serial2)
 
-    if len(argv) == 4:
-        calibrate(serial1, serial2)
-        svg_write(argv[1], serial1, serial2)
-    else:
-        print('Incorrect number of arguments!')
+    calibrate(serial1, serial2)
+    svg_write(argv[1], serial1, serial2)
 
     serial1.close()
     serial2.close()
