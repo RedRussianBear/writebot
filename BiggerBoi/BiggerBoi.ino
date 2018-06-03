@@ -41,7 +41,7 @@ void setup() {
   Serial.begin(9600);
 
   digitalWrite(enablePin, LOW);
-  Serial.println("Booted");
+  Serial.println("Booted. ARD1.");
 }
 
 
